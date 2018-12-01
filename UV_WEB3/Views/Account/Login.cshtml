@@ -1,0 +1,76 @@
+﻿@model LoginViewModel
+
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+
+    string ru = ViewData["ReturnURL"] as string;
+    Layout = "~/Views/Account/Header.cshtml";
+}
+
+
+<!-- jQuery -->
+<script src="~/vendors/jquery/dist/jquery.min.js"></script>
+<!-- PNotify -->
+<script src="~/vendors/pnotify/dist/pnotify.js"></script>
+<script src="~/vendors/pnotify/dist/pnotify.buttons.js"></script>
+<script src="~/vendors/pnotify/dist/pnotify.nonblock.js"></script>
+
+<link href="~/vendors/pnotify/dist/pnotify.custom.min.css" rel="stylesheet" />
+
+@if (TempData["login"] != null)
+{
+
+    <script>
+        $(document).ready(function () {
+            new PNotify({
+                title: 'Ups!',
+                text: 'Usuario o contraseña incorrecta',
+                type: 'error'
+            });
+        });
+
+
+    </script>
+
+    TempData.Remove("login");
+}
+<img src="~/images/logo.png" alt="UV" style="display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;">
+<form asp-action="Login">
+    <h1>Iniciar Sesión</h1>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div>
+
+
+        <input asp-for="Usuario" required class="form-control" required="" placeholder="Usuario" />
+        <span asp-validation-for="Usuario" class="text-danger"></span>
+
+    </div>
+    <div>
+        <input asp-for="Password" type="password" required class="form-control" placeholder="Contraseña" required="" />
+
+        <span asp-validation-for="Password" class="text-danger"></span>
+        @Html.HiddenFor(m => m.ReturnURL, new { Value = ru })
+
+    </div>
+
+
+    <div>
+        <input type="submit" value="Entrar" style=" margin-left: 0px" class="btn btn-primary btn-block" />
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="separator">
+
+        <div class="clearfix"></div>
+        <br />
+
+        <div>
+            <h1><i class="fa fa-university"></i> Universidad Veracruzana</h1>
+            <p>©2018 Todos los derechos reservados.</p>
+        </div>
+    </div>
+</form>

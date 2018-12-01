@@ -1,0 +1,1022 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Datos";
+}
+
+<input type="hidden" id="stationID" value="@ViewBag.id">
+<input type="hidden" id="lat" value="@ViewBag.latitud">
+<input type="hidden" id="long" value="@ViewBag.longitud">
+
+
+
+<!-- SweetAlerts -->
+
+<link href="~/vendors/SweetAlert/sweet-alert2.css" rel="stylesheet" />
+<link href="~/vendors/SweetAlert/swal-forms.css" rel="stylesheet" />
+
+<!-- Font Awesome -->
+<link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+<!-- Datatables -->
+<link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+<link href="~/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+<link href="~/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+<link href="~/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+
+
+<!-- bootstrap-daterangepicker -->
+<link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+
+<link href="~/vendors/pnotify/dist/pnotify.custom.min.css" rel="stylesheet" />
+<input type="hidden" value='@Context.Session.GetInt32("tipoUser")' id="tipoDeUsuario" />
+<input type="hidden" value='@ViewBag.id' id="idEstacion" />
+<input type="hidden" value='@ViewBag.nombreEstacion' id="nomEstacionsita" />
+
+
+
+<div class="container" id="container">
+    <br />
+
+    <div class="col-md-5 col-sm-12 col-xs-12">
+        <div class="dashboard_graph">
+            <div class="row x_title">
+                <div class="col-md-6">
+                    <h3>@ViewBag.nombreEstacion</h3>
+                </div>
+
+            </div>
+
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div id="map" style="width:100%;height:400px;"></div>
+
+                @if (Context.Session.GetInt32("tipoUser") != 3)
+                {
+                    <div class="separator">
+                    </div>
+                    <div class="col-md-12">
+                        <h3>Cargar registros</h3>
+                    </div>
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+
+                        <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Upload">
+                            <div class="form-group">
+
+                                <h4>Equipo</h4>
+                                <select name="idEquipo" class="form-control" asp-items="ViewBag.equipos"></select>
+                                <input type="hidden" name="idEstacion" value="@ViewBag.id" />
+                                <div class="form-group col-md-12 col-sm-12 col-xs-12">
+                                    <br />
+                                    <input type="file" name="files" multiple />
+
+
+                                </div>
+                            </div>
+                            <div class="form-group text-left">
+
+                                <input type="submit" value="Cargar" />
+
+                            </div>
+                        </form>
+
+
+                    </div>
+
+                }
+
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+        <div class="ln_solid"></div>
+
+    </div>
+
+    <div class="col-md-7 col-sm-12 col-xs-12">
+        <div class="dashboard_graph">
+            <div class="row x_title">
+                <div class="col-md-6">
+                    <h3>Gráficas</h3>
+                </div>
+
+            </div>
+
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <h3>Filtros</h3>
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <h4>Parametro</h4>
+                    <select id="selectParametro" class="form-control" asp-items="ViewBag.parametros"></select>
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12">
+
+
+                </div>
+
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                    <h4>Fecha Inicial</h4>
+                    <div class="control-group">
+                        <div class="controls">
+                            <div class="input-prepend input-group">
+                                <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                <input type="text" style="width: 200px" id="fechaIniID" name="fechaIni" class="form-control">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                    <h4>Fecha Final</h4>
+                    <div class="control-group">
+                        <div class="controls">
+                            <div class="input-prepend input-group">
+                                <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+
+                                <input type="text" style="width: 200px" id="fechaFinID" name="fechaFin" id="fechaFin" value="" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (Context.Session.GetInt32("tipoUser") != 3)
+            {
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <h3>Gráfica</h3>
+                    <div id="divCanvas" class="col-md-12 col-sm-12 col-xs-12">
+                        <canvas id="canvas"></canvas>
+
+                    </div>
+                </div>
+            }
+            <div class="clearfix"></div>
+        </div>
+        <br />
+        <div class="ln_solid"></div>
+
+    </div>
+
+    <br />
+
+    @if (Context.Session.GetInt32("tipoUser") == 3)
+    {
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <h3>Gráfica</h3>
+            <div id="divCanvas" class="col-md-12 col-sm-12 col-xs-12">
+                <canvas id="canvas"></canvas>
+
+            </div>
+        </div>
+    }
+
+
+    @if (Context.Session.GetInt32("tipoUser") != 3)
+    {
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="dashboard_graph">
+                <div class="row x_title">
+                    <div class="col-md-6">
+                        <h3>Registros de @ViewBag.nombreEstacion</h3>
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="container">
+                        <div style="width:90%; margin:0 auto;">
+                            <table id="tablaRegistros" class="table table-striped table-bordered dt-responsive nowrap" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            ID
+                                        </th>
+                                        <th>
+                                            No. Lance
+                                        </th>
+                                        <th>
+                                            Valor
+                                        </th>
+                                        <th>
+                                            Dato
+                                        </th>
+                                        <th>
+                                            Profundidad
+                                        </th>
+
+                                        <th>
+                                            Fecha
+                                        </th>
+                                        <th>
+                                            Hora
+                                        </th>
+                                        <th>
+                                            Estación
+                                        </th>
+                                        <th>
+                                            Equipo
+                                        </th>
+                                        <th>
+                                            Estatus
+                                        </th>
+                                        <th>
+                                            Editar
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="clearfix"></div>
+            </div>
+
+        </div>
+    }
+
+</div>
+
+
+<!-- jQuery -->
+<script src="~/vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="~/vendors/Chart.js/dist/Chart.bundle.min.js"></script>
+<!-- SweetAlerts -->
+<script src="~/vendors/SweetAlert/sweet-alert2.js"></script>
+<script src="~/vendors/SweetAlert/swal-forms.js"></script>
+
+<!-- Datatables -->
+<script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="~/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+<script src="~/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+<script src="~/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+<script src="~/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+<script src="~/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+<script src="~/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+<script src="~/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+<script src="~/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+<script src="~/vendors/jszip/dist/jszip.min.js"></script>
+<script src="~/vendors/pdfmake/build/pdfmake.min.js"></script>
+<script src="~/vendors/pdfmake/build/vfs_fonts.js"></script>
+<!-- PNotify -->
+<script src="~/vendors/pnotify/dist/pnotify.js"></script>
+<script src="~/vendors/pnotify/dist/pnotify.buttons.js"></script>
+<script src="~/vendors/pnotify/dist/pnotify.nonblock.js"></script>
+
+<!-- bootstrap-daterangepicker -->
+<script src="../vendors/moment/min/moment.min.js"></script>
+<script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+
+
+<script>
+
+    $(function () {
+        $('input[name="fechaIni"]').daterangepicker({
+            locale: {
+                format: 'YYYY-MM-DD'
+            },
+            singleDatePicker: true,
+            showDropdowns: true,
+            minYear: 1901,
+            maxYear: parseInt(moment().format('YYYY'), 10)
+        }
+        ).on('change', function () {
+            $('input[name="fechaIni"]').attr("value", this.value);
+
+        }).change();
+
+
+    });
+
+    $(function () {
+        $('input[name="fechaFin"]').daterangepicker({
+            locale: {
+                format: 'YYYY-MM-DD'
+            },
+            singleDatePicker: true,
+            showDropdowns: true,
+            minYear: 1901,
+            maxYear: parseInt(moment().format('YYYY'), 10)
+        }
+        ).on('change', function () {
+            $('input[name="fechaFin"]').attr("value", this.value);
+
+        }).change();
+
+
+    });
+
+
+    $(document).ready(function () {
+        var id = $("#stationID").val()
+        
+        callMethodDetails(id);
+
+        if ($("#tipoDeUsuario").val() == 3) {
+
+            $("#selectParametro").bind("change keyup", function () {
+                getDataNonAdmin();
+            });
+
+
+            $('#fechaIniID , #fechaFinID').on('change', function () {
+
+                getDataNonAdmin();
+            });
+        }
+
+    });
+
+    function callMethodDetails(id) {
+
+        $.ajax({
+            type: "GET",
+            url: "/Home/detalleEstacionGet/" + id,
+
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+
+                console.log(result);
+                llenar(result);
+
+            },
+            error: function (response) {
+
+                console.log('eror');
+            }
+        });
+    }
+
+
+
+    function callMethod() {
+        var id = $("#stationID").val()
+        $.ajax({
+            type: "POST",
+            url: "/Home/GetStationsOne/" + id,
+
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                console.log(result);
+                llenarMap(result);
+
+            },
+            error: function (response) {
+
+                console.log('eror');
+            }
+        });
+    }
+
+
+
+
+    var myChart;
+    var previosSize;
+    function llenarMap(result) {
+
+        var locations = result;
+        var myLatLng = { lat: locations[0].latitud, lng: locations[0].longitud };
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: myLatLng,
+            mapTypeId: google.maps.MapTypeId.HYBRID
+        });
+
+
+        var marker, i;
+
+        for (i = 0; i < locations.length; i++) {
+            marker = new google.maps.Marker({
+                position: new google.maps.LatLng(locations[i].latitud, locations[i].longitud),
+                map: map
+
+            });
+
+
+            google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                return function () {
+                    infowindow.setContent('<p>' + locations[i].nombre + '</p>' +
+                        '<button onclick="myFunction()">Ir</button>');
+                    infowindow.open(map, marker);
+
+                }
+            })(marker, i));
+
+        }
+    }
+
+    function llenar(response) {
+
+
+        var table = $('#tablaRegistros').DataTable({
+            "language": {
+                "sProcessing": "Procesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "No se encontraron resultados",
+                "sEmptyTable": "Ningún dato disponible en esta tabla",
+                "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            },
+            "destroy": true,
+            fixedHeader: true,
+            responsive: true,
+            "pageLength": 10,
+            "order": [[4, "asc"]],
+            'bVisible': false,
+            "data": response,
+
+
+
+            "columns": [
+                { "data": "id" },
+                { "data": "noLance" },
+                { "data": "valor" },
+                { "data": "nomDato" },
+                { "data": "profundidad" },
+                { "data": "fechaLance" },
+                { "data": "hora" },
+                { "data": "nomEstacion" },
+                { "data": "nomEquipo" },
+                {
+                    data: null, fnCreatedCell: function (td, cellData, rowData, row, col) {
+
+                        $(td).attr('id', rowData.id + 'Dato');
+
+
+                        $(td).attr('class', 'text-center');
+
+                    }, render: function (data, type, row) {
+                        if (row.estatus == 1) {
+                            return "<a href='#' class='btn btn-success btn-sm' onclick=DeleteData('" + row.id + "'); ><i class='fa fa-check'></i></a>";
+                        }
+                        return "<a href='#' class='btn btn-danger btn-sm' onclick=ActivateData('" + row.id + "'); ><i class='fa fa-minus'></i></a>";
+
+                    }
+                },
+                {
+                    data: null, fnCreatedCell: function (td, cellData, rowData, row, col) {
+
+                        $(td).attr('class', 'text-center');
+
+                    }, render: function (data, type, full, meta) { return "<a class='btn btn-info btm-sm'  onclick=editData('" + full.id + "')><i class='fa fa-edit'></i></a>"; }
+                }
+
+            ]
+        });
+
+        $("#selectParametro").bind("change keyup", function () {
+
+            table.draw();
+        });
+
+
+        $('#fechaIniID , #fechaFinID').on('change', function () {
+
+
+            table.draw();
+        });
+        $.fn.dataTable.ext.search.push(
+            function (settings, data, dataIndex) {
+                var newparametro = $('#selectParametro').val();
+                var parametro = data[3]; // use data for the age column
+                var profundidad = data[4];
+                var fechaDato = new Date(data[5]).getTime();
+                var fechaIni = new Date($('input[name="fechaIni"]').val()).getTime();
+                var fechaFin = new Date($('input[name="fechaFin"]').val()).getTime();
+
+                if ((((newparametro === parametro) || (newparametro === '')) && (fechaDato >= fechaIni && fechaDato <= fechaFin))) {
+                    return true;
+                }
+
+                return false;
+            }
+        );
+        //var myChart = null;
+        table.on('search.dt', function () {
+
+            $(window).resize(function () {
+                dibujaGrafica();
+            });
+            dibujaGrafica();
+        });
+
+        function dibujaGrafica() {
+            if (myChart != null) {
+                myChart.destroy();
+            }
+
+
+            var jsonData = table.rows({ filter: 'applied' }).data();
+            var labels = [], data = [];
+            for (i = 0; i < jsonData.length; i++) {
+                labels.push(parseFloat(jsonData[i].profundidad));
+                data.push(jsonData[i].valor);
+            }
+            if (data.length == 0) {
+                new PNotify({
+                    title: 'Sin registos',
+                    text: 'No se han encontrado registros en la fecha seleccionada',
+                    type: 'warning'
+                });
+            }
+
+            if ($("#selectParametro").val() != "Salinidad") {
+                var config = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "My First dataset",
+                            backgroundColor: "rgba(38, 185, 154, 0.31)",
+                            borderColor: "rgba(38, 185, 154, 0.7)",
+                            pointBorderColor: "rgba(38, 185, 154, 0.7)",
+                            pointBackgroundColor: "rgba(38, 185, 154, 0.7)",
+                            pointHoverBackgroundColor: "#fff",
+                            pointHoverBorderColor: "rgba(220,220,220,1)",
+                            pointBorderWidth: 0.5,
+                            data: data,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        title: {
+                            display: true,
+                            text: 'Estacion ' + $('#stationID').val() + ' - ' + $('#selectParametro').val()
+                        },
+                        tooltips: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                        },
+                        scales: {
+                            yAxes: [{
+                                display: false,
+                                scaleLabel: {
+                                    display: true,
+                                    reverse: true,
+                                    labelString: $('#selectParametro').val()
+                                }
+                            }],
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+
+                                    labelString: 'Profundidad'
+                                }
+                            }]
+                        }
+                    }
+                }
+
+            } else {
+                var config = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "My First dataset",
+                            backgroundColor: "rgba(38, 185, 154, 0.31)",
+                            borderColor: "rgba(38, 185, 154, 0.7)",
+                            pointBorderColor: "rgba(38, 185, 154, 0.7)",
+                            pointBackgroundColor: "rgba(38, 185, 154, 0.7)",
+                            pointHoverBackgroundColor: "#fff",
+                            pointHoverBorderColor: "rgba(220,220,220,1)",
+                            pointBorderWidth: 0.5,
+                            data: data,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        title: {
+                            display: true,
+                            text: 'Estacion ' + $('#stationID').val() + ' - ' + $('#selectParametro').val()
+                        },
+                        tooltips: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                        },
+                        scales: {
+                            yAxes: [{
+                                display: false,
+                                stacked:true,
+                                scaleLabel: {
+                                    display: true,
+                                    reverse: true,
+                                    labelString: $('#selectParametro').val()
+                                }
+                            }],
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+
+                                    labelString: 'Profundidad'
+                                }
+                            }]
+                        }
+                    }
+                }
+            }
+            var ctx1 = document.getElementById('canvas');
+            ctx1.height = 200;
+            var oldheight = $("#canvas").height();
+            var oldwidth = $("#canvas").width();
+
+            $("#canvas").css({ transform: "", "align-items": "center", "justify-content": "center", left: "50%", margin: "auto" });
+            if (myChart != null) {
+
+                $("#divCanvas").css({ height: "" })
+
+                myChart.destroy();
+            }
+            $(canvas).prop('width', 400)
+            $(canvas).prop('height', 400)
+            myChart = new Chart($("#canvas"), config);
+            if ($("#selectParametro").val() == "Salinidad") {
+               // alert("hola");
+                var oldheight = $("#canvas").height();
+                var oldwidth = $("#canvas").width();
+                $("#divCanvas").css({ height: oldwidth })
+                $("#canvas").css({ transform: "rotate(90deg)", "align-items": "center", "justify-content": "center", left: "50%", margin: "auto" });
+                if (myChart != null) {
+                    myChart.destroy();
+                }
+
+                myChart = new Chart($("#canvas"), config);
+                return;
+            }
+         
+            //ctx1.height = ctx1.style.getPropertyValue("height");
+         
+
+            // resize the canvas to fill browser window dynamically
+
+
+
+
+
+           // canvas.css("transform:", "rotate(90deg)");
+
+
+
+
+        }
+
+    }
+
+    function getDataNonAdmin() {
+
+
+            var url2 = '@Url.Content("~/")' + "Home/RequestSpecificData";
+
+        var json = {
+            idEst: $("#idEstacion ").val(),
+            idDato: $("#selectParametro :selected").text(),
+            fechaIni: $('#fechaIniID').val(),
+            fechaFin: $('#fechaFinID').val(),
+        };
+
+
+        console.log(json);
+        
+                    $.ajax({
+                        type: 'GET',
+                        url: url2,
+                        dataType: "json",
+                        data: { myjson: JSON.stringify(json), },
+                        cache: false,
+                        success: function (data) {
+                            if (myChart != null) {
+                                myChart.destroy();
+                            }
+
+
+                            console.log(data);
+                            if (data.data) {
+                               
+
+                                var newdata = data.data;
+
+                                var labels = [], datagrp = [];
+                                for (i = 0; i < newdata.length; i++) {
+                                    labels.push(parseFloat(newdata[i].profundidad));
+                                    datagrp.push(newdata[i].valor);
+                                }
+                               
+
+                                var config = {
+                                    type: 'line',
+                                    data: {
+                                        labels: labels,
+                                        datasets: [{
+                                            label: "My First dataset",
+                                            backgroundColor: "rgba(38, 185, 154, 0.31)",
+                                            borderColor: "rgba(38, 185, 154, 0.7)",
+                                            pointBorderColor: "rgba(38, 185, 154, 0.7)",
+                                            pointBackgroundColor: "rgba(38, 185, 154, 0.7)",
+                                            pointHoverBackgroundColor: "#fff",
+                                            pointHoverBorderColor: "rgba(220,220,220,1)",
+                                            pointBorderWidth: 0.5,
+                                            data: datagrp,
+                                            fill: false
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        
+                        maintainAspectRatio: false,
+                                        title: {
+                                            display: true,
+                                            text: $("#nomEstacionsita").val()+" - " + data.nombreDato
+                                        },
+                                        tooltips: {
+                                            mode: 'index',
+                                            intersect: false,
+                                        },
+                                        hover: {
+                                            mode: 'nearest',
+                                            intersect: true
+                                        },
+                                        scales: {
+                                            yAxes: [{
+                                                display: false,
+                                                scaleLabel: {
+                                                    display: true,
+                                                    reverse: true,
+                                                    labelString: data.nombreDato
+                                                }
+                                            }],
+                                            xAxes: [{
+                                                display: true,
+                                                scaleLabel: {
+                                                    display: true,
+
+                                                    labelString: 'Profundidad'
+                                                }
+                                            }]
+                                        }
+                                    }
+                                }
+                                var ctx1 = document.getElementById('canvas');
+                                
+                                var oldheight = $("#canvas").height();
+                                var oldwidth = $("#canvas").width();
+
+                                $("#canvas").css({ transform: "", "align-items": "center", "justify-content": "center", left: "50%", margin: "auto" });
+                                if (myChart != null) {
+
+                                    $("#divCanvas").css({ height: "" })
+
+                                    myChart.destroy();
+                                }
+                               
+                                $(canvas).prop('height', 400)
+                                myChart = new Chart($("#canvas"), config);
+                                if ($("#selectParametro").val() == "Salinidad") {
+                                    // alert("hola");
+                                    var oldheight = $("#canvas").height();
+                                    var oldwidth = $("#canvas").width();
+                                    $("#divCanvas").css({ height: oldwidth })
+                                    $("#canvas").css({ transform: "rotate(90deg)", "align-items": "center", "justify-content": "center", left: "50%", margin: "auto" });
+                                    if (myChart != null) {
+                                        myChart.destroy();
+                                    }
+
+                                    myChart = new Chart($("#canvas"), config);
+                                    return;
+                                }
+                                
+
+
+                            } else if (data.data == false) {
+
+                                new PNotify({
+                                    title: 'Error',
+                                    text: 'No hay datos en rango de fechas seleccionado.',
+                                    type: 'error'
+                                });
+                            }
+                        }
+
+                    });
+
+
+
+    }
+
+
+    function DeleteData(CustomerID) {
+        if (confirm("¿Está seguro de desactivar el registro?")) {
+            Delete(CustomerID);
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    function Delete(CustomerID) {
+        var url = '@Url.Content("~/")' + "Home/desactivateDato";
+        $.post(url, { ID: CustomerID }, function (data) {
+            if (data == "Desactivado") {
+                new PNotify({
+                    title: 'Desactivado',
+                    text: 'Se ha desactivado el registro correctamente.',
+                    type: 'success'
+                });
+
+                var str = "Dato";
+                var str2 = "#" + CustomerID;
+                $(str2.concat(str)).empty();
+
+                $("<a href='#' class='btn btn-danger btn-sm' onclick=ActivateData('" + CustomerID + "'); ><i class='fa fa-minus'></i></a>").appendTo(str2.concat(str));
+
+            }
+            else {
+                alert("Ups! Algo malo ocurrió");
+            }
+        });
+    }
+
+    function editData(dataID) {
+        var url1 = '@Url.Content("~/")' + "Home/getSpecificParam";
+        var StringOption;
+        $.ajax({
+            type: 'POST',
+            url: url1,
+
+            data: { id: dataID },
+            cache: false,
+            success: function (data) {
+                swal({
+                    title: 'Editando dato #' + data.param[0].id,
+                    type: 'info',
+
+
+                    html: '<input id="swal-input0" placeholder="ID" value=' + data.param[0].id + ' class="form-control mb-1" type="hidden">' +
+                        '<h2>Número de lance</h2><input id="swal-input1" placeholder="NoLance" value=' + data.param[0].noLance + ' class="form-control mb-1" type="text">' +
+                        '<h2>Valor</h2> <input id="swal-input2" placeholder="Valor" value=' + data.param[0].valor + ' class="form-control mb-1" type="text">' +
+                        '<h2>Dato</h2> <select id="swal-input3" class="form-control mb-1" placeholder="Dato" >' + data.datos + '</select>' +
+                        '<h2>Profundidad</h2> <input id="swal-input4" placeholder="Profundidad" value=' + data.param[0].profundidad + ' class="form-control mb-1" type="text">' +
+                        '<h2>Fecha</h2> <input id="swal-input5" placeholder="Fecha" value=' + data.param[0].fechaLance + ' required pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])/(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])/(?:30))|(?:(?:0[13578]|1[02])-31))" class="form-control mb-1">' +
+                        '<h2>Hora</h2> <input id="swal-input6" placeholder="Hora" value=' + data.param[0].hora + ' class="form-control mb-1" type="text">' +
+                        '<h2>Estacion</h2> <select id="swal-input7" class="form-control mb-1" placeholder="Estacion" >' + data.estacion + '</select>' +
+                        '<h2>Equipo</h2> <select id="swal-input8" class="form-control mb-1" placeholder="Equipo" >' + data.equipo + '</select>',
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    focusConfirm: false,
+                    confirmButtonText:
+                        '<i class="fa fa-thumbs-up"></i> Editar!',
+                    confirmButtonAriaLabel: 'Thumbs up, great!',
+                    cancelButtonText:
+                        '<i class="fa fa-thumbs-down">Cancelar</i>',
+                    cancelButtonAriaLabel: 'Thumbs down',
+
+                    preConfirm: function () {
+                        return new Promise(function (resolve) {
+                            resolve([
+                                $('#swal-input0').val(),
+                                $('#swal-input1').val(),
+                                $('#swal-input2').val(),
+                                $('#swal-input3').val(),
+                                $('#swal-input4').val(),
+                                $('#swal-input5').val(),
+                                $('#swal-input6').val(),
+                                $('#swal-input7').val(),
+                                $('#swal-input8').val()
+                            ])
+                        })
+                    },
+
+                }).then(function (result) {
+                    var url2 = '@Url.Content("~/")' + "Home/UpdateSpecificParam/";
+
+
+                    console.log(result);
+
+                    var json = {
+                        IdRegistro: result.value[0],
+                        noLance: result.value[1],
+                        valor: result.value[2],
+                        IdDato: result.value[3],
+                        profundidad: result.value[4],
+                        FechaLance: result.value[5],
+                        hora: result.value[6],
+                        IdEstacion: result.value[7],
+                        IdEquipo: result.value[8]
+
+
+                    };
+                    console.log(json);
+
+                    $.ajax({
+                        type: 'GET',
+                        url: url2,
+                        dataType: "json",
+                        data: { myjson: JSON.stringify(json)},
+                        cache: false,
+                        success: function (data) {
+                            if (data.data==true) {
+                                new PNotify({
+                                    title: 'Editado',
+                                    text: 'Se ha editado el registro correctamente.',
+                                    type: 'success'
+                                });
+                                window.location.href = data.url;
+                            } else if(data.data==false) {
+                                new PNotify({
+                                    title: 'Error',
+                                    text: 'Sin permisos suficientes',
+                                    type: 'error'
+                                });
+                            }
+                        }
+
+                    });
+
+
+
+
+                }).catch(swal.noop);
+            }
+        });
+
+
+
+    }
+
+            function ActivateData(CustomerID) {
+                if (confirm("¿Está seguro de activar el registro?")) {
+            Activate(CustomerID);
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    function Activate(CustomerID) {
+        var url = '@Url.Content("~/")' + "Home/activateDato";
+        $.post(url, { ID: CustomerID }, function (data) {
+            if (data == "Activado") {
+                new PNotify({
+                    title: 'Activado',
+                    text: 'Se ha activado el registro correctamente.',
+                    type: 'success'
+                });
+                var str = "Dato";
+                var str2 = "#" + CustomerID;
+                $(str2.concat(str)).empty();
+
+                $("<a href='#' class='btn btn-success btn-sm' onclick=DeleteData('" + CustomerID + "'); ><i class='fa fa-check'></i></a>").appendTo(str2.concat(str));
+
+            }
+            else {
+                alert("Ups! Algo malo ocurrió");
+            }
+        });
+    }
+</script>
+
+
+
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDuZGa9Bp-mA7Rkqeh1f56ggZ7tZZBniA&callback=callMethod"></script>

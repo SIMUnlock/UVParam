@@ -1,0 +1,230 @@
+﻿@model IEnumerable<UV_WEB3.Models.Datos>
+
+@{
+    ViewData["Title"] = "Datos";
+}
+
+<!-- Datatables -->
+<link href="../vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="../vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+<link href="../vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+<link href="../vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+<link href="../vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+
+<link href="~/vendors/pnotify/dist/pnotify.custom.min.css" rel="stylesheet" />
+
+<link href="../build/css/custom.min.css" rel="stylesheet">
+
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="dashboard_graph x_panel">
+            <div class="row x_title">
+                <div class="col-md-6">
+                    <h3>Lista de datos</h3>
+                </div>
+
+            </div>
+            <div class="x_content">
+                <div class="container">
+                    <br />
+                    <div style="width:90%; margin:0 auto;">
+                        <table id="tablaDatos" class="table table-striped table-bordered dt-responsive nowrap" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        ID
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Nombre)
+                                    </th>
+                                    <th>
+                                        Unidad de Medida
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Estatus)
+                                    </th>
+
+                                    <th>Editar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdDato)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Nombre)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.UnidadMedida)
+                                        </td>
+                                        <td id="@Html.DisplayFor(modelItem => item.IdDato)Dato">
+                                            @if (item.Estatus == 1)
+                                            {
+                                                <a href='#' class='btn btn-success btn-sm' onclick='DeleteData( @Html.DisplayFor(modelItem => item.IdDato))'><i class='fa fa-check'></i></a>
+                                            }
+                                            @if (item.Estatus == 2)
+                                            {
+                                                <a href='#' class='btn btn-danger btn-sm' onclick='ActivateData( @Html.DisplayFor(modelItem => item.IdDato))'><i class='fa fa-minus'></i></a>
+                                            }
+
+                                        </td>
+                                        <td>
+                                            <a class='btn btn-info btm-sm' href='/Home/editarDato/@Html.DisplayFor(modelItem => item.IdDato)'><i class='fa fa-edit'></i></a>
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div style="margin-left: 10px;">
+        <button class="btn btn-primary" type="button"><a href="@Url.Action("Index", "Home")" style="color: white">Inicio</a></button>
+
+    </div>
+
+</div>
+
+<!-- jQuery -->
+<script src="~/vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- Datatables -->
+<script src="../vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="../vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="../vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+<script src="../vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+<script src="../vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+<script src="../vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+<script src="../vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+<script src="../vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+<script src="../vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+<script src="../vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+<script src="../vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+<script src="../vendors/jszip/dist/jszip.min.js"></script>
+<script src="../vendors/pdfmake/build/pdfmake.min.js"></script>
+<script src="../vendors/pdfmake/build/vfs_fonts.js"></script>
+<!-- PNotify -->
+<script src="../vendors/pnotify/dist/pnotify.js"></script>
+<script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+<script src="../vendors/pnotify/dist/pnotify.nonblock.js"></script>
+
+<script>
+    $(document).ready(function calldata() {
+
+        $('#tablaDatos').DataTable({
+            "language": {
+                "sProcessing": "Procesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "No se encontraron resultados",
+                "sEmptyTable": "Ningún dato disponible en esta tabla",
+                "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            },
+            "destroy": true,
+            "pageLength": 10,
+            "order": [[0, "desc"]],
+            'bVisible': false,
+
+            "aoColumnDefs": [
+                { "sClass": "text-center", "aTargets": [3, 4] }
+            ]
+        });
+
+    });
+
+</script>
+
+
+<script>
+
+
+    function DeleteData(DataID) {
+        if (confirm("¿Está seguro de desactivar el dato?")) {
+            Delete(DataID);
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    function Delete(DataID) {
+        var url = '@Url.Content("~/")' + "Home/desactivateData";
+        $.post(url, { ID: DataID }, function (data) {
+            if (data == "Desactivado") {
+                new PNotify({
+                    title: 'Desactivado',
+                    text: 'Se ha desactivado el dato correctamente.',
+                    type: 'success'
+                });
+                var str = "Dato";
+                var str2 = "#" + DataID;
+                $(str2.concat(str)).empty();
+
+                $("<a href='#' class='btn btn-danger btn-sm' onclick=ActivateData('" + DataID + "'); ><i class='fa fa-minus'></i></a>").appendTo(str2.concat(str));
+            }
+            else {
+                alert("Ups! Algo malo ocurrió");
+            }
+        });
+    }
+
+            function ActivateData(CustomerID) {
+            if (confirm("¿Está seguro de activar el dato?")) {
+            Activate(CustomerID);
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    function Activate(DataID) {
+        var url = '@Url.Content("~/")' + "Home/activateData";
+        $.post(url, { ID: DataID }, function (data) {
+            if (data == "Activado") {
+                new PNotify({
+                    title: 'Activado',
+                    text: 'Se ha activado el dato correctamente.',
+                    type: 'success'
+                });
+                var str = "Dato";
+                var str2 = "#" + DataID;
+                $(str2.concat(str)).empty();
+
+                $("<a href='#' class='btn btn-success btn-sm' onclick=DeleteData('" + DataID + "'); ><i class='fa fa-check'></i></a>").appendTo(str2.concat(str));
+
+            }
+            else {
+                alert("Ups! Algo malo ocurrió");
+            }
+        });
+    }
+</script>
+

@@ -1,0 +1,6 @@
+﻿@model IEnumerable<UV_WEB3.Models.Estaciones>
+
+@foreach (var item in Model)
+{
+    <li><a href='/Home/detalleEstacion/@Html.DisplayFor(modelItem => item.IdEstacion)'>@Html.DisplayFor(modelItem => item.Nombre)</a></li>
+}

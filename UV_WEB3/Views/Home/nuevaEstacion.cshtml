@@ -1,0 +1,96 @@
+﻿@model UV_WEB3.Models.Estaciones
+
+@{
+    ViewData["Title"] = "Nueva estación";
+}
+
+
+
+<link rel="stylesheet" type="text/css" href="css/jquery-gmaps-latlon-picker.css" />
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Nueva estación</h2>
+
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <br>
+
+
+
+
+
+            <form asp-action="nuevaEstacion" class="form-horizontal form-label-left">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+                <div class="form-group">
+                    <label asp-for="Nombre" class="control-label col-md-3 col-sm-3 col-xs-12">Nombre</label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="Nombre" required class="form-control col-md-7 col-xs-12" />
+                    </div>
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <div class="form-group gllpLatlonPicker">
+
+                    <br />
+                    <div class="col-md-12 gllpMap" style="width:100%;height:400px;"> <br /></div>
+                    <br />
+                    <div class="form-group"><input type='hidden' class='gllpZoom' value='14' /></div>
+                    <div class="form-group">
+                        <br />
+                        <label asp-for="Latitud" class="control-label col-md-3 col-sm-3 col-xs-12">Latitud</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input asp-for="Latitud" required class=" gllpLatitude form-control col-md-7 col-xs-12" value="19.164614" />
+                        </div>
+                        <span asp-validation-for="Latitud" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+
+                        <label asp-for="Longitud" style="color:#73879C;" class="control-label col-md-3 col-sm-3 col-xs-12">Longitud</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input asp-for="Longitud" required class="gllpLongitude form-control col-md-7 col-xs-12" value="-96.115795" />
+                        </div>
+                        <input type='button' class='btn btn-warning gllpUpdateButton' value="Ir">
+                        <span asp-validation-for="Longitud" class="text-danger"></span>
+                    </div>
+
+
+
+                </div>
+
+
+
+
+                <div class="ln_solid"></div>
+
+                <div class="form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                        <button type="submit" value="Save" class="btn btn-success">Agregar</button>
+                        <button class="btn btn-dark" type="button"><a href="@Url.Action("verDatos", "Home")" style="color: white">Cancelar</a></button>
+
+                    </div>
+                </div>
+            </form>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<div style="margin-left: 10px;">
+    <button class="btn btn-primary" type="button"><a href="@Url.Action("Index", "Home")" style="color: white">Inicio</a></button>
+
+</div>
+
+
+<!-- jQuery -->
+<script src="~/vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDuZGa9Bp-mA7Rkqeh1f56ggZ7tZZBniA"></script>
+<script src="~/vendors/gmapspicker/js/jquery-gmaps-latlon-picker.js"></script>

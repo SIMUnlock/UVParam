@@ -1,0 +1,329 @@
+﻿@model IEnumerable<UV_WEB3.Models.Estaciones>
+
+
+@{
+    ViewData["Title"] = "Comparar Registros";
+}
+
+
+<link href="~/css/carrusel.min.css" rel="stylesheet" />
+<!-- SweetAlerts -->
+
+<link href="~/vendors/SweetAlert/sweet-alert2.css" rel="stylesheet" />
+<link href="~/vendors/SweetAlert/swal-forms.css" rel="stylesheet" />
+<!-- bootstrap-daterangepicker -->
+<link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+
+<link href="~/vendors/pnotify/dist/pnotify.custom.min.css" rel="stylesheet" />
+
+<link href="../build/css/custom.min.css" rel="stylesheet">
+<div class="container" id="container">
+
+
+    <div class="carousel slide" style="position: inherit;" data-ride="carousel" id="postsCarousel">
+        <div class="container">
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <h3>Estaciones</h3>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-6 text-right" style="margin-top:7px">
+                    <a class="btn btn-outline-secondary prev" href="" title="Atrás"><i class="fa fa-lg fa-chevron-left"></i></a>
+                    <a class="btn btn-outline-secondary next" href="" title="Más"><i class="fa fa-lg fa-chevron-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="container p-t-0 m-t-2 carousel-inner">
+            @for (int i = 0; i <= Model.Count() / 4; i++)
+            {
+
+                <div class="row row-equal item @(i == 0 ? "active" : "") m-t-0 ">
+                    @foreach (var est in Model.Skip(i * 4).Take(4))
+                    {
+                        <div class="animated flipInY col-lg-3 col-md-3 col-sm-4 col-xs-6" style="display:block">
+                            <div class="tile-stats">
+                                <div class="icon"><i class="fa fa-life-buoy"></i></div>
+                                <div class="count">@est.Nombre</div>
+
+                                <a onclick="DrawGraph(@est.IdEstacion,'@est.Nombre')" style="margin-left: 1rem" class="btn btn-success">Añadir</a>
+
+
+                                <p>Latidud: @est.Latitud , Longitud: @est.Longitud</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="~/vendors/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/build/js/jQuerySwipe.js"></script>
+    <!-- Bootstrap -->
+    <script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <!-- SweetAlerts -->
+    <script src="~/vendors/SweetAlert/sweet-alert2.js"></script>
+    <script src="~/vendors/SweetAlert/swal-forms.js"></script>
+
+    <!-- bootstrap-daterangepicker -->
+    <script src="../vendors/moment/min/moment.min.js"></script>
+    <script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+    <!-- PNotify -->
+    <script src="~/vendors/pnotify/dist/pnotify.js"></script>
+    <script src="~/vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <script src="~/vendors/pnotify/dist/pnotify.nonblock.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            new PNotify({
+                title: 'Importante',
+                text: 'Añada estaciones para comparar registros',
+                type: 'info'
+            });
+            $('.carousel').carousel({
+                interval: false
+            });
+
+
+            $(".carousel").swipe({
+
+                swipe: function (event, direction, distance, duration, fingerCount, fingerData) {
+
+                    if (direction == 'left') $('.carousel').carousel('next');
+                    if (direction == 'right') $('.carousel').carousel('prev');
+
+                },
+                allowPageScroll: "vertical"
+
+            });
+            // manual carousel controls
+            $('.next').click(function () { $('.carousel').carousel('next'); return false; });
+            $('.prev').click(function () { $('.carousel').carousel('prev'); return false; });
+        });
+
+
+
+    </script>
+
+
+    <div class="container" id="containerGraph">
+
+
+    </div>
+
+    <script>
+
+        function DrawGraph(idEstacion,nombreEstacion) {
+
+            var url1 = '@Url.Content("~/")' + "Home/getImportantData";
+
+        $.ajax({
+            type: 'POST',
+            url: url1,
+            cache: false,
+            success: function (data) {
+                swal({
+                    title: 'Consulta a: ' + nombreEstacion,
+                    type: 'info',
+
+
+                    html: '<h2>Dato</h2> <select id="swal-input0" class="form-control mb-1" placeholder="Dato" >' + data.datos + '</select>'
+                        + ' <h4>Fecha Inicial</h4> <div class="control-group" style="display: -webkit-inline-box;"> <div class="controls"> <div class="input-prepend input-group"> <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span> <input type="text" style="width: 200px" id="fechaIniID" name="fechaIni" class="form-control"> </div> </div> </div>'
+                        + ' <h4>Fecha Final</h4> <div class="control-group" style="display: -webkit-inline-box;"> <div class="controls"> <div class="input-prepend input-group"> <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span> <input type="text" style="width: 200px" id="fechaFinID" name="fechaFin" class="form-control"> </div> </div> </div>',
+
+                    customClass: 'custom-swal-class',
+                    onOpen: function () {
+                        $('input[name="fechaIni"]').daterangepicker({
+                            locale: {
+                                format: 'YYYY-MM-DD'
+                            },
+                            singleDatePicker: true,
+                            showDropdowns: true,
+                            minYear: 1901,
+                            maxYear: parseInt(moment().format('YYYY'), 10)
+                        }
+                        ).on('change', function () {
+                            $('input[name="fechaIni"]').attr("value", this.value);
+
+                            }).change();
+
+                        $('input[name="fechaFin"]').daterangepicker({
+                            locale: {
+                                format: 'YYYY-MM-DD'
+                            },
+                            singleDatePicker: true,
+                            showDropdowns: true,
+                            minYear: 1901,
+                            maxYear: parseInt(moment().format('YYYY'), 10)
+                        }
+                        ).on('change', function () {
+                            $('input[name="fechaFin"]').attr("value", this.value);
+
+                        }).change();
+                    },
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    focusConfirm: false,
+                    confirmButtonText:
+                        '<i class="fa fa-thumbs-up"></i> Consultar',
+                    confirmButtonAriaLabel: 'Thumbs up, great!',
+                    cancelButtonText:
+                        '<i class="fa fa-thumbs-down">Cancelar</i>',
+                    cancelButtonAriaLabel: 'Thumbs down',
+                    preConfirm: function () {
+                        return new Promise(function (resolve) {
+                            resolve([
+
+                                $('#swal-input0').val(),
+                                $('#fechaIniID').val(),
+                                $('#fechaFinID').val(),
+
+                            ])
+                        })
+                    },
+
+
+
+
+                }).then(function (result) {
+                    var url2 = '@Url.Content("~/")' + "Home/RequestSpecificData";
+
+
+                    
+
+                    var json = {
+                        idEst: idEstacion,
+                        idDato: result.value[0],
+                        fechaIni: result.value[1],
+                        fechaFin: result.value[2]
+
+                    };
+                    
+
+                    $.ajax({
+                        type: 'GET',
+                        url: url2,
+                        dataType: "json",
+                        data: { myjson: JSON.stringify(json)},
+                        cache: false,
+                        success: function (data) {
+                            if (data.data) {
+                                var randcontrol = Math.floor((Math.random() * 1000) + 1);
+
+                                $('<div id="close' + randcontrol + '" class="col-md-6 col-sm-6 col-xs-12"> <div class="x_panel"> <div class="x_title"> <h2>' + nombreEstacion + ' - ' + data.nombreDato + ' <small>Fecha: ' + json.fechaIni + ' - ' + json.fechaFin + '</small></h2> <ul class="nav navbar-right panel_toolbox"> <li><a id="collapse' + randcontrol + '" class="collapse-link"><i class="fa fa-chevron-up"></i></a> </li> <li><a id="closelink' + randcontrol + '" class="close-link"><i class="fa fa-close"></i></a> </li> </ul> <div class="clearfix"></div> </div> <div id="Container' + randcontrol + '" class="x_content"> </div> </div> </div>').appendTo("#containerGraph");
+                                $(document).ready(function () {
+                                    $("#collapse" + randcontrol).on("click", function () {
+                                        var a = $(this).closest(".x_panel"),
+                                            b = $(this).find("i"),
+                                            c = a.find(".x_content");
+                                        a.attr("style") ? c.slideToggle(200, function () {
+                                            a.removeAttr("style")
+                                        }) : (c.slideToggle(200), a.css("height", "auto")), b.toggleClass("fa-chevron-up fa-chevron-down")
+                                    }), $("#closelink" + randcontrol).click(function () {
+                                        
+                                        var b = $("#close" + randcontrol);
+                                        b.animate({ width: 0 }, 300, "linear", function () {
+                                                $(this).remove();
+                                            }
+                                            )
+                                    })
+                                });
+                                $(' <div class="col-md-12 col-sm-12 col-xs-12"> <h3>Gráfica</h3> <div class="col-md-12 col-sm-12 col-xs-12"> <canvas id="' + randcontrol + '"></canvas> </div> </div>').appendTo("#Container" + randcontrol);
+                               
+
+                                var newdata = data.data;
+                                
+                                var labels = [], datagrp = [];
+                                for (i = 0; i < newdata.length; i++) {
+                                    labels.push(parseFloat(newdata[i].profundidad));
+                                    datagrp.push(newdata[i].valor);
+                                }
+
+
+                                
+                                var config = {
+                                    type: 'line',
+                                    data: {
+                                        labels: labels,
+                                        datasets: [{
+                                            label: "My First dataset",
+                                            backgroundColor: "rgba(38, 185, 154, 0.31)",
+                                            borderColor: "rgba(38, 185, 154, 0.7)",
+                                            pointBorderColor: "rgba(38, 185, 154, 0.7)",
+                                            pointBackgroundColor: "rgba(38, 185, 154, 0.7)",
+                                            pointHoverBackgroundColor: "#fff",
+                                            pointHoverBorderColor: "rgba(220,220,220,1)",
+                                            pointBorderWidth: 0.5,
+                                            data: datagrp,
+                                            fill: false
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+
+                                        title: {
+                                            display: true,
+                                            text: nombreEstacion + " - " + data.nombreDato 
+                                        },
+                                        tooltips: {
+                                            mode: 'index',
+                                            intersect: false,
+                                        },
+                                        hover: {
+                                            mode: 'nearest',
+                                            intersect: true
+                                        },
+                                        scales: {
+                                            yAxes: [{
+                                                display: false,
+                                                scaleLabel: {
+                                                    display: true,
+                                                    reverse: true,
+                                                    labelString: data.nombreDato
+                                                }
+                                            }],
+                                            xAxes: [{
+                                                display: true,
+                                                scaleLabel: {
+                                                    display: true,
+
+                                                    labelString: 'Profundidad'
+                                                }
+                                            }]
+                                        }
+                                    }
+                                }
+
+
+                                var ctx = document.getElementById('' + randcontrol);
+                                myChart = new Chart(ctx, config);
+
+
+                            } else if (data.data == false) {
+                                
+                                new PNotify({
+                                    title: 'Error',
+                                    text: 'No hay datos en rango de fechas seleccionado.',
+                                    type: 'error'
+                                });
+                            }
+                        }
+
+                    });
+
+
+
+
+                }).catch(swal.noop);
+            }
+        });
+        }
+
+    </script>
+
+
+
+</div>

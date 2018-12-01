@@ -1,0 +1,101 @@
+﻿@model UV_WEB3.Models.Equipos
+
+@{
+    ViewData["Title"] = "Crear equipo";
+    string ru = ViewData["ReturnURL"] as string;
+}
+<link href="../build/css/custom.min.css" rel="stylesheet">
+
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Nuevo equipo</h2>
+
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <br>
+
+
+
+            <form asp-action="crearEquipo" class="form-horizontal form-label-left">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+                <div class="form-group">
+                    <label asp-for="Modelo" class="control-label col-md-3 col-sm-3 col-xs-12">Modelo</label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="Modelo" required class="form-control col-md-7 col-xs-12" />
+                    </div>
+                    <span asp-validation-for="Modelo" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="NoSerial" class="control-label col-md-3 col-sm-3 col-xs-12">No. Serial</label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="NoSerial" required class="form-control col-md-7 col-xs-12" />
+                    </div>
+                    <span asp-validation-for="NoSerial" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Rango" class="control-label col-md-3 col-sm-3 col-xs-12">Rango</label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="Rango" required class="form-control col-md-7 col-xs-12" />
+                    </div>
+                    <span asp-validation-for="Rango" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Presicion" class="control-label col-md-3 col-sm-3 col-xs-12">Presición</label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="Presicion" required class="form-control col-md-7 col-xs-12" />
+                    </div>
+                    <span asp-validation-for="Presicion" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Resolucion" class="control-label col-md-3 col-sm-3 col-xs-12">Resolución</label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="Resolucion" required class="form-control col-md-7 col-xs-12" />
+                    </div>
+                    <span asp-validation-for="Resolucion" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Estabilidad" class="control-label col-md-3 col-sm-3 col-xs-12">Estabilidad</label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="Estabilidad" required class="form-control col-md-7 col-xs-12" />
+                    </div>
+                    <span asp-validation-for="Estabilidad" class="text-danger"></span>
+                </div>
+
+
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                        <button type="submit" value="Save" class="btn btn-success">Agregar</button>
+                        <button class="btn btn-dark" type="button"><a href="@Url.Action("verEquipos", "Home")" style="color: white">Cancelar</a></button>
+
+                    </div>
+                </div>
+            </form>
+
+
+
+
+        </div>
+
+
+    </div>
+    <div style="margin-left: 10px;">
+        <button class="btn btn-primary" type="button"><a href="@Url.Action("Index", "Home")" style="color: white">Inicio</a></button>
+
+    </div>
+
+</div>
+
+<!-- jQuery -->
+<script src="~/vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+
+
+

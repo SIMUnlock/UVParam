@@ -1,0 +1,178 @@
+﻿@model IEnumerable<UV_WEB3.Models.Estaciones>
+
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+
+<link href="~/css/carrusel.min.css" rel="stylesheet" />
+
+<div class="container" id="container">
+
+    <div class="carousel slide" style="position: inherit;" data-ride="carousel" id="postsCarousel">
+        <div class="container">
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <h3>Estaciones</h3>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-6 text-right" style="margin-top:7px">
+                    <a class="btn btn-outline-secondary prev" href="" title="Atrás"><i class="fa fa-lg fa-chevron-left"></i></a>
+                    <a class="btn btn-outline-secondary next" href="" title="Más"><i class="fa fa-lg fa-chevron-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="container p-t-0 m-t-2 carousel-inner">
+            @for (int i = 0; i <= Model.Count() / 4; i++)
+            {
+
+                <div class="row row-equal item @(i == 0 ? "active" : "") m-t-0 ">
+                    @foreach (var est in Model.Skip(i * 4).Take(4))
+                    {
+                        <div class="animated flipInY col-lg-3 col-md-3 col-sm-4 col-xs-6" style="display:block">
+                            <div class="tile-stats">
+                                <div class="icon"><i class="fa fa-life-buoy"></i></div>
+                                <div class="count">@est.Nombre</div>
+
+                                <a href="/Home/detalleEstacion/@est.IdEstacion" style="margin-left: 1rem" class="btn btn-success">Acceder</a>
+
+
+                                <p>Latidud: @est.Latitud , Longitud: @est.Longitud</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="~/vendors/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/build/js/jQuerySwipe.js"></script>
+    <!-- Bootstrap -->
+    <script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.carousel').carousel({
+                interval: false
+            });
+
+
+            $(".carousel").swipe({
+
+                swipe: function (event, direction, distance, duration, fingerCount, fingerData) {
+
+                    if (direction == 'left') $('.carousel').carousel('next');
+                    if (direction == 'right') $('.carousel').carousel('prev');
+
+                },
+                allowPageScroll: "vertical"
+
+            });
+            // manual carousel controls
+            $('.next').click(function () { $('.carousel').carousel('next'); return false; });
+            $('.prev').click(function () { $('.carousel').carousel('prev'); return false; });
+        });
+
+    </script>
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="dashboard_graph">
+
+            <div class="row x_title">
+                <div class="col-md-6">
+                    <h3>Mapa</h3>
+                </div>
+
+            </div>
+
+            <div class="col-md-12 col-sm-12 col-xs-12">
+
+                <div id="map" style="width:100%;height:400px;"></div>
+
+
+
+                <script>
+
+                    $(document).ready(function () {
+
+                        callMethod();
+
+
+
+
+                    });
+
+
+                    function callMethod() {
+
+                        $.ajax({
+                            type: "GET",
+                            url: "GetStations2",
+
+                            contentType: "application/json;charset=utf-8",
+                            dataType: "json",
+                            success: function (result) {
+
+
+                                llenar(result);
+
+                            },
+                            error: function (response) {
+
+                                console.log('eror');
+                            }
+                        });
+                    }
+
+                </script>
+
+                <script>
+
+
+
+                    function llenar(result) {
+                        console.log(result);
+                        var locations = result;
+                        var map = new google.maps.Map(document.getElementById('map'), {
+                            zoom: 10,
+                            mapTypeId: google.maps.MapTypeId.HYBRID
+                        });
+
+                        var infowindow = new google.maps.InfoWindow({
+                            content: " "
+                        });
+                        var bounds = new google.maps.LatLngBounds();
+                        var marker, i;
+
+                        for (i = 0; i < locations.length; i++) {
+                            marker = new google.maps.Marker({
+                                position: new google.maps.LatLng(locations[i].latitud, locations[i].longitud),
+                                map: map
+                            });
+                            bounds.extend(marker.position);
+
+
+                            google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                                return function () {
+                                    infowindow.setContent('<h3>' + locations[i].nombre + '</h3><p>Latidud: ' + locations[i].latitud + '</p><p>Longitud: ' + locations[i].longitud + '</p>' +
+                                        '<a  href="/Home/detalleEstacion/' + locations[i].idEstacion + '" style="margin-left: 1rem" class="btn btn-success">Acceder</a>');
+                                    infowindow.open(map, marker);
+
+                                }
+                            })(marker, i));
+                            map.fitBounds(bounds);
+                        }
+                    }
+                </script>
+
+
+                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDuZGa9Bp-mA7Rkqeh1f56ggZ7tZZBniA"></script>
+
+
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>

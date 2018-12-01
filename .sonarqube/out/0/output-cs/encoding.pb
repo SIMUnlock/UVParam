@@ -1,0 +1,17 @@
+U
+LC:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Controllers\AccountController.csutf-8R
+IC:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Controllers\HomeController.csutf-8L
+CC:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Models\ConsultaDatos.csutf-8D
+;C:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Models\Datos.csutf-8F
+=C:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Models\Equipos.csutf-8M
+DC:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Models\ErrorViewModel.csutf-8I
+@C:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Models\Estaciones.csutf-8F
+=C:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Models\Estados.csutf-8P
+GC:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Models\InformesRegistros.csutf-8O
+FC:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Models\InformesUsuarios.csutf-8M
+DC:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Models\LoginViewModel.csutf-8H
+?C:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Models\Registros.csutf-8G
+>C:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Models\Usuarios.csutf-8H
+?C:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Models\uvContext.csutf-8?
+6C:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Program.csutf-8?
+6C:\Users\agus_\source\repos\UV_WEB3\UV_WEB3\Startup.csutf-8

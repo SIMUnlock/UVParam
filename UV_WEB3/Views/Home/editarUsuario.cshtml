@@ -1,0 +1,136 @@
+﻿@model UV_WEB3.Models.Usuarios
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Editar: @(Model.Nombre)</h2>
+
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <br>
+
+
+            <form asp-action="Edit" class="form-horizontal form-label-left">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="IdUsuario" class="control-label col-md-3 col-sm-3 col-xs-12"></label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="IdUsuario" required class="form-control col-md-7 col-xs-12 " disabled="disabled" />
+                        <input type="hidden" asp-for="IdUsuario" />
+                    </div>
+                    <span asp-validation-for="IdUsuario" class="text-danger"></span>
+
+
+                </div>
+
+                <div class="form-group">
+
+                    <label asp-for="Nombre" class="control-label col-md-3 col-sm-3 col-xs-12"></label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="Nombre" required class="form-control col-md-7 col-xs-12" />
+                    </div>
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+
+
+                </div>
+
+
+
+
+                <div class="form-group">
+
+                    <label asp-for="ApellidoPat" class="control-label col-md-3 col-sm-3 col-xs-12"></label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="ApellidoPat" required class="form-control col-md-7 col-xs-12" />
+                    </div>
+                    <span asp-validation-for="ApellidoPat" class="text-danger"></span>
+
+
+                </div>
+
+                <div class="form-group">
+
+                    <label asp-for="ApellitoMat" class="control-label col-md-3 col-sm-3 col-xs-12"></label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="ApellitoMat" required class="form-control col-md-7 col-xs-12" />
+                    </div>
+                    <span asp-validation-for="ApellitoMat" class="text-danger"></span>
+
+
+                </div>
+                <div class="form-group">
+
+                    <label asp-for="Usuario" class="control-label col-md-3 col-sm-3 col-xs-12"></label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="Usuario" required class="form-control col-md-7 col-xs-12" />
+                    </div>
+                    <span asp-validation-for="Usuario" class="text-danger"></span>
+
+
+                </div>
+                <div class="form-group">
+
+                    <label asp-for="Password" class="control-label col-md-3 col-sm-3 col-xs-12"></label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input asp-for="Password" required type="password" class="form-control col-md-7 col-xs-12" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+
+
+                </div>
+                <div class="form-group">
+
+                    <label asp-for="Tipo" class="control-label col-md-3 col-sm-3 col-xs-12"></label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+
+                        <select asp-for="Tipo" class="form-control col-md-7 col-xs-12">
+                            <option value=1>Administrador</option>
+                            <option value=2>Profesor</option>
+                            <option value=3>Estudiante</option>
+
+                        </select>
+                    </div>
+                    <span asp-validation-for="Tipo" class="text-danger"></span>
+
+
+                </div>
+
+
+
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                        <button type="submit" value="Save" class="btn btn-success">Agregar</button>
+                        <button class="btn btn-dark" type="button"><a href="@Url.Action("verUsuarios", "Home")" style="color: white">Cancelar</a></button>
+
+                    </div>
+                </div>
+            </form>
+
+
+
+
+        </div>
+
+    </div>
+
+</div>
+<div style="margin-left: 10px;">
+    <button class="btn btn-primary" type="button"><a href="@Url.Action("Index", "Home")" style="color: white">Inicio</a></button>
+
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<!-- jQuery -->
+<script src="~/vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
